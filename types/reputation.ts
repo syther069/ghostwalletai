@@ -1,12 +1,28 @@
-export type AgentName = "Risk Agent" | "Trading Agent" | "NFT Agent" | "Social Agent";
+export type AgentKey = "trading" | "defi" | "risk" | "activity" | "portfolio";
+
+export type AgentName =
+  | "Trading Agent"
+  | "DeFi Agent"
+  | "Risk Agent"
+  | "Activity Agent"
+  | "Portfolio Agent";
 
 export type RiskLevel = "Low" | "Moderate" | "High" | "Critical";
 
 export type AgentResult = {
+  key: AgentKey;
   agent: AgentName;
   score: number;
+  confidence: number;
+  label: string;
   reasoning: string;
-  personality: string;
+  weight: number;
+};
+
+export type MoveCallFact = {
+  packageId: string;
+  module: string;
+  function: string;
 };
 
 export type WalletFacts = {
@@ -24,6 +40,16 @@ export type WalletFacts = {
   distinctCounterparties: number;
   tokenTypes: string[];
   recentDigestSample: string[];
+  moveCalls: MoveCallFact[];
+  protocolCount: number;
+  swapCount: number;
+  defiInteractionCount: number;
+  stakingObjectCount: number;
+  liquidityObjectCount: number;
+  largeTransferCount: number;
+  averageBalanceChangeSui: number;
+  largestBalanceChangeSui: number;
+  stablecoinRatio: number;
 };
 
 export type ReputationResult = {
@@ -37,10 +63,19 @@ export type ReputationResult = {
   roast: string;
   insights: string[];
   agents: AgentResult[];
-  aiMode: "openai" | "mock";
+  aiMode: "openai" | "mock" | "hybrid";
   analyzedAt: string;
 };
 
 export type AnalyzeRequest = {
   address: string;
+};
+
+export type LeaderboardEntry = {
+  address: string;
+  trustScore: number;
+  riskScore: number;
+  archetype: string;
+  analyzedAt: string;
+  aiMode: ReputationResult["aiMode"];
 };

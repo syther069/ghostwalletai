@@ -23,7 +23,14 @@ export function ScoreCard({ title, value, detail, tone = "cyan" }: ScoreCardProp
         <CardTitle className="text-sm uppercase tracking-[0.2em] text-muted-foreground">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-3xl font-black text-white">{value}</div>
+        <div
+          className={cn(
+            "break-words font-black text-white",
+            typeof value === "string" && value.length > 12 ? "text-2xl leading-tight" : "text-3xl"
+          )}
+        >
+          {value}
+        </div>
         <p className="mt-2 text-sm text-muted-foreground">{detail}</p>
       </CardContent>
     </Card>

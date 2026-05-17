@@ -8,13 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatAddress } from "@/lib/utils";
-import type { ReputationResult } from "@/types/reputation";
+import type { LeaderboardEntry } from "@/types/reputation";
 
 export function LeaderboardView() {
-  const [entries, setEntries] = useState<ReputationResult[]>([]);
+  const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
 
   useEffect(() => {
-    const saved = JSON.parse(window.localStorage.getItem("ghostwallet:leaderboard") ?? "[]") as ReputationResult[];
+    const saved = JSON.parse(window.localStorage.getItem("ghostwallet:leaderboard") ?? "[]") as LeaderboardEntry[];
     setEntries(saved.sort((a, b) => b.trustScore - a.trustScore));
   }, []);
 
@@ -62,7 +62,9 @@ export function LeaderboardView() {
                   <Badge variant={wallet.trustScore > 90 ? "success" : "secondary"}>{wallet.trustScore}</Badge>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-sm text-muted-foreground">{wallet.summary}</p>
+                  <p className="text-sm text-muted-foreground">
+                    Risk {wallet.riskScore}/100. Analyzed {new Date(wallet.analyzedAt).toLocaleDateString("en-US")} via {wallet.aiMode} mode.
+                  </p>
                   <a
                     className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-white"
                     href={`https://suivision.xyz/account/${wallet.address}`}

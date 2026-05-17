@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import type { ReputationResult } from "@/types/reputation";
+import type { LeaderboardEntry, ReputationResult } from "@/types/reputation";
 
 const ADDRESS_PATTERN = /^0x[a-fA-F0-9]{1,64}$/;
 
@@ -155,9 +155,17 @@ export function WalletAnalyzer() {
 
 function saveLeaderboardResult(result: ReputationResult) {
   const key = "ghostwallet:leaderboard";
-  const current = JSON.parse(window.localStorage.getItem(key) ?? "[]") as ReputationResult[];
+  const current = JSON.parse(window.localStorage.getItem(key) ?? "[]") as LeaderboardEntry[];
+  const entry: LeaderboardEntry = {
+    address: result.address,
+    trustScore: result.trustScore,
+    riskScore: result.riskScore,
+    archetype: result.archetype,
+    analyzedAt: result.analyzedAt,
+    aiMode: result.aiMode
+  };
   const withoutDuplicate = current.filter((entry) => entry.address !== result.address);
-  const nextEntries = [result, ...withoutDuplicate]
+  const nextEntries = [entry, ...withoutDuplicate]
     .sort((a, b) => b.trustScore - a.trustScore)
     .slice(0, 12);
 

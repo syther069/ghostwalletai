@@ -17,6 +17,8 @@ const riskVariants = {
 } as const;
 
 export function ResultsDashboard({ result }: { result: ReputationResult }) {
+  const aiLabel = result.aiMode === "openai" ? "5 AI Agents" : result.aiMode === "hybrid" ? "Hybrid Agents" : "Mock Agents";
+
   return (
     <section className="grid gap-5">
       <div className="grid gap-5 lg:grid-cols-[300px_1fr]">
@@ -24,9 +26,7 @@ export function ResultsDashboard({ result }: { result: ReputationResult }) {
           <CardHeader>
             <div className="flex items-center justify-between gap-3">
               <CardTitle className="text-white">Live Reputation</CardTitle>
-              <Badge variant={result.aiMode === "openai" ? "default" : "secondary"}>
-                {result.aiMode === "openai" ? "AI" : "Mock AI"}
-              </Badge>
+              <Badge variant={result.aiMode === "openai" ? "default" : "secondary"}>{aiLabel}</Badge>
             </div>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
@@ -39,19 +39,25 @@ export function ResultsDashboard({ result }: { result: ReputationResult }) {
         </Card>
 
         <div className="grid gap-4">
-          <div className="grid gap-4 sm:grid-cols-3">
-            <ScoreCard title="Risk Score" value={result.riskScore} detail="100 means highest risk." tone="pink" />
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <ScoreCard
-              title="SUI Balance"
-              value={result.facts.suiBalance.toFixed(3)}
-              detail="Fetched from Sui mainnet."
-              tone="cyan"
+              title="Trust Score"
+              value={result.trustScore}
+              detail="Weighted 5-agent consensus."
+              tone="green"
+            />
+            <ScoreCard title="Risk Score" value={result.riskScore} detail="Risk Agent direct output." tone="pink" />
+            <ScoreCard
+              title="Archetype"
+              value={result.archetype}
+              detail="Derived from strongest agent signals."
+              tone="violet"
             />
             <ScoreCard
-              title="Activity"
-              value={result.facts.transactionCount}
-              detail={`${result.facts.activeDays} active day samples.`}
-              tone="green"
+              title="Roast Engine"
+              value="Online"
+              detail="Still unserious, now agent-aware."
+              tone="cyan"
             />
           </div>
 
