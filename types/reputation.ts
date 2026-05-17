@@ -65,6 +65,10 @@ export type ReputationResult = {
   agents: AgentResult[];
   aiMode: "openai" | "mock" | "hybrid";
   analyzedAt: string;
+  narrative: string;
+  walrusBlobId: string | null;
+  walrusUrl: string | null;
+  walrusStatus: "stored" | "retrieved" | "failed" | "skipped";
 };
 
 export type AnalyzeRequest = {
@@ -73,9 +77,32 @@ export type AnalyzeRequest = {
 
 export type LeaderboardEntry = {
   address: string;
+  blobId: string;
   trustScore: number;
   riskScore: number;
   archetype: string;
   analyzedAt: string;
+  aiMode: ReputationResult["aiMode"];
+};
+
+export type WalrusAgentRecord = {
+  score: number;
+  confidence: number;
+  label: string;
+  reasoning: string;
+};
+
+export type WalrusReputationBlob = {
+  wallet: string;
+  analyzedAt: string;
+  trustScore: number;
+  riskScore: number;
+  archetype: string;
+  agents: Record<AgentKey, WalrusAgentRecord>;
+  narrative: string;
+  roast: string;
+  facts: WalletFacts;
+  insights: string[];
+  riskLevel: RiskLevel;
   aiMode: ReputationResult["aiMode"];
 };

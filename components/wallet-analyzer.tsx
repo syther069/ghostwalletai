@@ -35,18 +35,11 @@ export function WalletAnalyzer() {
     setResult(null);
 
     try {
-      const response = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ address: address.trim() })
-      });
-      const payload = await response.json();
+      const walletAddress = address.trim();
+      const cachedBlobId = window.localStorage.getItem(getWalletStorageKey(walletAddress));
+      const cachedResult = cachedBlobId ? await fetchCachedAnalysis(cachedBlobId).catch(() => null) : null;
+      const nextResult = cachedResult ?? (await runFreshAnalysis(walletAddress));
 
-      if (!response.ok) {
-        throw new Error(payload.error ?? "Analysis failed.");
-      }
-
-      const nextResult = payload as ReputationResult;
       setResult(nextResult);
       saveLeaderboardResult(nextResult);
     } catch (caughtError) {
@@ -153,11 +146,47 @@ export function WalletAnalyzer() {
   );
 }
 
+async function runFreshAnalysis(address: string) {
+  const response = await fetch("/api/analyze", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ address })
+  });
+  const payload = await response.json();
+
+  if (!response.ok) {
+    throw new Error(payload.error ?? "Analysis failed.");
+  }
+
+  return payload as ReputationResult;
+}
+
+async function fetchCachedAnalysis(blobId: string) {
+  const response = await fetch(`/api/walrus/${encodeURIComponent(blobId)}`, {
+    method: "GET",
+    cache: "no-store"
+  });
+  const payload = await response.json();
+
+  if (!response.ok) {
+    throw new Error(payload.error ?? "Walrus retrieval failed.");
+  }
+
+  return payload as ReputationResult;
+}
+
 function saveLeaderboardResult(result: ReputationResult) {
+  if (!result.walrusBlobId) {
+    return;
+  }
+
+  window.localStorage.setItem(getWalletStorageKey(result.address), result.walrusBlobId);
+
   const key = "ghostwallet:leaderboard";
   const current = JSON.parse(window.localStorage.getItem(key) ?? "[]") as LeaderboardEntry[];
   const entry: LeaderboardEntry = {
     address: result.address,
+    blobId: result.walrusBlobId,
     trustScore: result.trustScore,
     riskScore: result.riskScore,
     archetype: result.archetype,
@@ -170,4 +199,8 @@ function saveLeaderboardResult(result: ReputationResult) {
     .slice(0, 12);
 
   window.localStorage.setItem(key, JSON.stringify(nextEntries));
+}
+
+function getWalletStorageKey(address: string) {
+  return `ghostwallet:${address}`;
 }

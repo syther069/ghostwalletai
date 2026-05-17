@@ -76,6 +76,7 @@ export async function analyzeWallet(facts: WalletFacts): Promise<ReputationResul
   const trustScore = calculateTrustScore(agents);
   const riskScore = agentByKey(agents, "risk").score;
   const archetype = deriveArchetype(facts, agents, trustScore, riskScore);
+  const narrative = buildConsensusSummary(facts, agents, trustScore, riskScore, archetype);
 
   return {
     address: facts.address,
@@ -84,12 +85,16 @@ export async function analyzeWallet(facts: WalletFacts): Promise<ReputationResul
     riskScore,
     riskLevel: getRiskLevel(riskScore),
     archetype,
-    summary: buildConsensusSummary(facts, agents, trustScore, riskScore, archetype),
+    summary: narrative,
+    narrative,
     roast: buildRoast(facts, trustScore, riskScore),
     insights: buildInsights(facts, agents),
     agents,
     aiMode: getAiMode(agentRuns.map((run) => run.source)),
-    analyzedAt: new Date().toISOString()
+    analyzedAt: new Date().toISOString(),
+    walrusBlobId: null,
+    walrusUrl: null,
+    walrusStatus: "skipped"
   };
 }
 

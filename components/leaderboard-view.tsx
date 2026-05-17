@@ -10,12 +10,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatAddress } from "@/lib/utils";
 import type { LeaderboardEntry } from "@/types/reputation";
 
+const WALRUS_AGGREGATOR_BASE_URL = "https://aggregator.walrus-testnet.walrus.space/v1";
+
 export function LeaderboardView() {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
 
   useEffect(() => {
     const saved = JSON.parse(window.localStorage.getItem("ghostwallet:leaderboard") ?? "[]") as LeaderboardEntry[];
-    setEntries(saved.sort((a, b) => b.trustScore - a.trustScore));
+    setEntries(saved.filter((entry) => Boolean(entry.blobId)).sort((a, b) => b.trustScore - a.trustScore));
   }, []);
 
   return (
@@ -59,19 +61,22 @@ export function LeaderboardView() {
                       </p>
                     </div>
                   </div>
-                  <Badge variant={wallet.trustScore > 90 ? "success" : "secondary"}>{wallet.trustScore}</Badge>
+                  <div className="flex flex-col items-end gap-2">
+                    <Badge variant={wallet.trustScore > 90 ? "success" : "secondary"}>{wallet.trustScore}</Badge>
+                    <Badge variant={wallet.riskScore > 60 ? "danger" : "default"}>Risk {wallet.riskScore}</Badge>
+                  </div>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-sm text-muted-foreground">
-                    Risk {wallet.riskScore}/100. Analyzed {new Date(wallet.analyzedAt).toLocaleDateString("en-US")} via {wallet.aiMode} mode.
+                    Blob {truncateBlobId(wallet.blobId)}. Analyzed {new Date(wallet.analyzedAt).toLocaleDateString("en-US")} via {wallet.aiMode} mode.
                   </p>
                   <a
                     className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-white"
-                    href={`https://suivision.xyz/account/${wallet.address}`}
+                    href={`${WALRUS_AGGREGATOR_BASE_URL}/${encodeURIComponent(wallet.blobId)}`}
                     target="_blank"
                     rel="noreferrer"
                   >
-                    View on explorer <ExternalLink className="h-4 w-4" />
+                    View Walrus blob <ExternalLink className="h-4 w-4" />
                   </a>
                 </CardContent>
               </Card>
@@ -81,4 +86,12 @@ export function LeaderboardView() {
       </div>
     </main>
   );
+}
+
+function truncateBlobId(blobId: string) {
+  if (blobId.length <= 18) {
+    return blobId;
+  }
+
+  return `${blobId.slice(0, 8)}...${blobId.slice(-6)}`;
 }

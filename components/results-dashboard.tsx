@@ -1,4 +1,4 @@
-import { Activity, Coins, Fingerprint, Flame, Layers3, Sparkles } from "lucide-react";
+import { Activity, Coins, ExternalLink, Fingerprint, Flame, Layers3, PackageCheck, Sparkles } from "lucide-react";
 import type { ComponentType } from "react";
 
 import { AgentBreakdown } from "@/components/agent-breakdown";
@@ -26,7 +26,14 @@ export function ResultsDashboard({ result }: { result: ReputationResult }) {
           <CardHeader>
             <div className="flex items-center justify-between gap-3">
               <CardTitle className="text-white">Live Reputation</CardTitle>
-              <Badge variant={result.aiMode === "openai" ? "default" : "secondary"}>{aiLabel}</Badge>
+              <div className="flex flex-wrap justify-end gap-2">
+                <Badge variant={result.aiMode === "openai" ? "default" : "secondary"}>{aiLabel}</Badge>
+                {result.walrusBlobId ? (
+                  <Badge variant="success">Walrus {truncateBlobId(result.walrusBlobId)}</Badge>
+                ) : (
+                  <Badge variant={result.walrusStatus === "failed" ? "warning" : "secondary"}>Walrus pending</Badge>
+                )}
+              </div>
             </div>
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
@@ -73,6 +80,18 @@ export function ResultsDashboard({ result }: { result: ReputationResult }) {
             </CardHeader>
             <CardContent className="grid gap-5">
               <p className="text-base leading-7 text-white/88">{result.summary}</p>
+              {result.walrusBlobId && result.walrusUrl && (
+                <a
+                  className="inline-flex w-fit items-center gap-2 rounded-md border border-emerald-300/25 bg-emerald-400/10 px-3 py-2 text-sm font-semibold text-emerald-200 transition-colors hover:border-emerald-200/60 hover:text-white"
+                  href={result.walrusUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <PackageCheck className="h-4 w-4" />
+                  Stored on Walrus: {truncateBlobId(result.walrusBlobId)}
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              )}
               <div className="grid gap-3 md:grid-cols-2">
                 {result.insights.map((insight) => (
                   <div key={insight} className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-sm text-muted-foreground">
@@ -125,6 +144,14 @@ export function ResultsDashboard({ result }: { result: ReputationResult }) {
       </div>
     </section>
   );
+}
+
+function truncateBlobId(blobId: string) {
+  if (blobId.length <= 18) {
+    return blobId;
+  }
+
+  return `${blobId.slice(0, 8)}...${blobId.slice(-6)}`;
 }
 
 function Fact({
