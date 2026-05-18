@@ -180,7 +180,10 @@ function saveLeaderboardResult(result: ReputationResult) {
     return;
   }
 
-  window.localStorage.setItem(address: result.wallet ?? result.address ?? result.address, result.walrusBlobId);
+  window.localStorage.setItem(
+  getWalletStorageKey(result.wallet ?? result.address),
+  result.walrusBlobId
+);
 
   const key = "ghostwallet:leaderboard";
   const current = JSON.parse(window.localStorage.getItem(key) ?? "[]") as LeaderboardEntry[];
