@@ -40,7 +40,7 @@ export function ResultsDashboard({ result }: { result: ReputationResult }) {
             <ReputationScore score={result.trustScore} />
             <div className="text-center">
               <Badge variant={riskVariants[result.riskLevel]}>{result.riskLevel} risk</Badge>
-              <p className="mt-3 break-all text-sm text-muted-foreground">{formatAddress(result.address)}</p>
+              <p className="mt-3 break-all text-sm text-muted-foreground">{formatAddress(result.wallet)}</p>
             </div>
           </CardContent>
         </Card>
@@ -93,7 +93,7 @@ export function ResultsDashboard({ result }: { result: ReputationResult }) {
                 </a>
               )}
               <div className="grid gap-3 md:grid-cols-2">
-                {result.insights.map((insight) => (
+                {(result.insights ?? []).map((insight) => (
                   <div key={insight} className="rounded-md border border-white/10 bg-white/[0.03] p-3 text-sm text-muted-foreground">
                     {insight}
                   </div>
@@ -135,9 +135,9 @@ export function ResultsDashboard({ result }: { result: ReputationResult }) {
               <CardTitle className="text-white">Chain Facts</CardTitle>
             </CardHeader>
             <CardContent className="grid gap-3 text-sm text-muted-foreground">
-              <Fact icon={Coins} label="Coin objects" value={result.facts.coinObjectCount} />
-              <Fact icon={Layers3} label="Owned objects sampled" value={result.facts.objectCount} />
-              <Fact icon={Activity} label="Counterparties" value={result.facts.distinctCounterparties} />
+              <Fact icon={Coins} label="Coin objects" value={result.facts?.coinObjectCount ?? 0} />
+              <Fact icon={Layers3} label="Owned objects sampled" value={result.facts?.objectCount ?? 0} />
+              <Fact icon={Activity} label="Counterparties" value={result.facts?.distinctCounterparties ?? 0} />
             </CardContent>
           </Card>
         </div>

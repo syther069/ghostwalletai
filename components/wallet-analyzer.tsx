@@ -150,7 +150,7 @@ async function runFreshAnalysis(address: string) {
   const response = await fetch("/api/analyze", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ address })
+    body: JSON.stringify({ wallet: address })
   });
   const payload = await response.json();
 
@@ -180,12 +180,12 @@ function saveLeaderboardResult(result: ReputationResult) {
     return;
   }
 
-  window.localStorage.setItem(getWalletStorageKey(result.address), result.walrusBlobId);
+  window.localStorage.setItem(getWalletStorageKey(result.wallet), result.walrusBlobId);
 
   const key = "ghostwallet:leaderboard";
   const current = JSON.parse(window.localStorage.getItem(key) ?? "[]") as LeaderboardEntry[];
   const entry: LeaderboardEntry = {
-    address: result.address,
+    address: result.wallet,
     blobId: result.walrusBlobId,
     trustScore: result.trustScore,
     riskScore: result.riskScore,
@@ -193,7 +193,7 @@ function saveLeaderboardResult(result: ReputationResult) {
     analyzedAt: result.analyzedAt,
     aiMode: result.aiMode
   };
-  const withoutDuplicate = current.filter((entry) => entry.address !== result.address);
+  const withoutDuplicate = current.filter((entry) => entry.address !== result.wallet);
   const nextEntries = [entry, ...withoutDuplicate]
     .sort((a, b) => b.trustScore - a.trustScore)
     .slice(0, 12);
