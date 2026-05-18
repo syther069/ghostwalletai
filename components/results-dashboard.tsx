@@ -40,7 +40,7 @@ export function ResultsDashboard({ result }: { result: ReputationResult }) {
             <ReputationScore score={result.trustScore} />
             <div className="text-center">
               <Badge variant={riskVariants[result.riskLevel]}>{result.riskLevel} risk</Badge>
-              <p className="mt-3 break-all text-sm text-muted-foreground">{formatAddress(result.wallet)}</p>
+              <p className="mt-3 break-all text-sm text-muted-foreground">{formatAddress(result.wallet ?? result.address)}</p>
             </div>
           </CardContent>
         </Card>
