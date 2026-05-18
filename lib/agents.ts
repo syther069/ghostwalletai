@@ -72,12 +72,34 @@ const AGENT_CONFIGS: AgentConfig[] = [
 
 export async function analyzeWallet(facts: WalletFacts): Promise<ReputationResult> {
   const agentRuns = await runSpecializedAgents(facts);
-  const agents = agentRuns.map((run) => run.result);
-  const trustScore = calculateTrustScore(agents);
-  const riskScore = agentByKey(agents, "risk").score;
-  const archetype = deriveArchetype(facts, agents, trustScore, riskScore);
-  const narrative = buildConsensusSummary(facts, agents, trustScore, riskScore, archetype);
+ const agents = {
+  trading: agentRuns.find((run) => run.result.key === "trading")!.result,
+  defi: agentRuns.find((run) => run.result.key === "defi")!.result,
+  risk: agentRuns.find((run) => run.result.key === "risk")!.result,
+  activity: agentRuns.find((run) => run.result.key === "activity")!.result,
+  portfolio: agentRuns.find((run) => run.result.key === "portfolio")!.result
+};
 
+const agentList = Object.values(agents);
+
+const trustScore = calculateTrustScore(agentList);
+
+const riskScore = agents.risk.score;
+
+const archetype = deriveArchetype(
+  facts,
+  agentList,
+  trustScore,
+  riskScore
+);
+
+const narrative = buildConsensusSummary(
+  facts,
+  agentList,
+  trustScore,
+  riskScore,
+  archetype
+);
   return {
     address: facts.address,
     facts,
@@ -88,7 +110,7 @@ export async function analyzeWallet(facts: WalletFacts): Promise<ReputationResul
     summary: narrative,
     narrative,
     roast: buildRoast(facts, trustScore, riskScore),
-    insights: buildInsights(facts, agents),
+    insights: buildInsights(facts, agentList),
     agents,
     aiMode: getAiMode(agentRuns.map((run) => run.source)),
     analyzedAt: new Date().toISOString(),
