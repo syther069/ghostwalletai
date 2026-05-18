@@ -12,12 +12,32 @@ export type RiskLevel = "Low" | "Moderate" | "High" | "Critical";
 export type AgentResult = {
   key: AgentKey;
   agent: AgentName;
+  agentName?: string;
+
   score: number;
+
   confidence: number;
+
   label: string;
+
   reasoning: string;
+
+  personalityObservation?: string;
+
   weight: number;
 };
+
+// ─── ADD THIS ────────────────────────────────────────────────────────────────
+
+export interface AgentSuite {
+  trading: AgentResult;
+  defi: AgentResult;
+  risk: AgentResult;
+  activity: AgentResult;
+  portfolio: AgentResult;
+}
+
+// ─── Wallet Facts ────────────────────────────────────────────────────────────
 
 export type MoveCallFact = {
   packageId: string;
@@ -27,82 +47,150 @@ export type MoveCallFact = {
 
 export type WalletFacts = {
   address: string;
+
   suiBalance: number;
+
   objectCount: number;
+
   coinObjectCount: number;
+
   nftLikeObjectCount: number;
+
   transactionCount: number;
+
   incomingTransactions: number;
+
   outgoingTransactions: number;
+
   activeDays: number;
+
   firstSeen: string | null;
+
   lastSeen: string | null;
+
   distinctCounterparties: number;
+
   tokenTypes: string[];
+
   recentDigestSample: string[];
+
   moveCalls: MoveCallFact[];
+
   protocolCount: number;
+
   swapCount: number;
+
   defiInteractionCount: number;
+
   stakingObjectCount: number;
+
   liquidityObjectCount: number;
+
   largeTransferCount: number;
+
   averageBalanceChangeSui: number;
+
   largestBalanceChangeSui: number;
+
   stablecoinRatio: number;
 };
 
+// ─── Main Reputation Result ──────────────────────────────────────────────────
+
 export type ReputationResult = {
   address: string;
+
+  wallet?: string;
+
   facts: WalletFacts;
+
   trustScore: number;
+
   riskScore: number;
+
   riskLevel: RiskLevel;
+
   archetype: string;
+
   summary: string;
+
   roast: string;
+
   insights: string[];
-  agents: AgentResult[];
+
+  agents: AgentSuite;
+
   aiMode: "openai" | "mock" | "hybrid";
+
   analyzedAt: string;
+
   narrative: string;
+
   walrusBlobId: string | null;
+
   walrusUrl: string | null;
+
   walrusStatus: "stored" | "retrieved" | "failed" | "skipped";
 };
+
+// ─── Requests ────────────────────────────────────────────────────────────────
 
 export type AnalyzeRequest = {
   address: string;
 };
 
+// ─── Leaderboard ─────────────────────────────────────────────────────────────
+
 export type LeaderboardEntry = {
   address: string;
+
   blobId: string;
+
   trustScore: number;
+
   riskScore: number;
+
   archetype: string;
+
   analyzedAt: string;
+
   aiMode: ReputationResult["aiMode"];
 };
 
+// ─── Walrus Storage Types ────────────────────────────────────────────────────
+
 export type WalrusAgentRecord = {
   score: number;
+
   confidence: number;
+
   label: string;
+
   reasoning: string;
 };
 
 export type WalrusReputationBlob = {
   wallet: string;
+
   analyzedAt: string;
+
   trustScore: number;
+
   riskScore: number;
+
   archetype: string;
+
   agents: Record<AgentKey, WalrusAgentRecord>;
+
   narrative: string;
+
   roast: string;
+
   facts: WalletFacts;
+
   insights: string[];
+
   riskLevel: RiskLevel;
+
   aiMode: ReputationResult["aiMode"];
 };
