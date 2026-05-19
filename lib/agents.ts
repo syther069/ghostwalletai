@@ -121,7 +121,7 @@ const narrative = buildConsensusSummary(
 }
 
 async function runSpecializedAgents(facts: WalletFacts) {
-  const apiKey = process.env.Groq_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   const client = apiKey ? new Groq({ apiKey }) : null;
 
   return Promise.all(
@@ -142,7 +142,7 @@ async function runSpecializedAgents(facts: WalletFacts) {
 
 async function runGroqAgent(client: Groq, config: AgentConfig, facts: WalletFacts): Promise<AgentResult> {
   const completion = await client.chat.completions.create({
-    model: process.env.Groq_MODEL || "gpt-4o-mini",
+    model: process.env.GROQ_MODEL || "openai/gpt-oss-120b",
     response_format: { type: "json_object" },
     temperature: 0.45,
     messages: [
