@@ -120,7 +120,7 @@ export type ReputationResult = {
 
   agents: AgentSuite;
 
-  aiMode: "openai" | "mock" | "hybrid";
+  aiMode: "Groq" | "mock" | "hybrid";
 
   analyzedAt: string;
 

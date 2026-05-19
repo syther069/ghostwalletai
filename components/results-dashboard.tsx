@@ -17,7 +17,7 @@ const riskVariants = {
 } as const;
 
 export function ResultsDashboard({ result }: { result: ReputationResult }) {
-  const aiLabel = result.aiMode === "openai" ? "5 AI Agents" : result.aiMode === "hybrid" ? "Hybrid Agents" : "Mock Agents";
+  const aiLabel = result.aiMode === "Groq" ? "5 AI Agents" : result.aiMode === "hybrid" ? "Hybrid Agents" : "Mock Agents";
 
   return (
     <section className="grid gap-5">
@@ -27,7 +27,7 @@ export function ResultsDashboard({ result }: { result: ReputationResult }) {
             <div className="flex items-center justify-between gap-3">
               <CardTitle className="text-white">Live Reputation</CardTitle>
               <div className="flex flex-wrap justify-end gap-2">
-                <Badge variant={result.aiMode === "openai" ? "default" : "secondary"}>{aiLabel}</Badge>
+                <Badge variant={result.aiMode === "Groq" ? "default" : "secondary"}>{aiLabel}</Badge>
                 {result.walrusBlobId ? (
                   <Badge variant="success">Walrus {truncateBlobId(result.walrusBlobId)}</Badge>
                 ) : (

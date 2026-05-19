@@ -103,7 +103,7 @@ export function WalletAnalyzer() {
 
               <div className="mt-5 flex flex-wrap gap-3 text-xs uppercase tracking-[0.18em] text-muted-foreground">
                 <span className="rounded-md border border-white/10 bg-white/[0.03] px-3 py-2">Real Sui RPC</span>
-                <span className="rounded-md border border-white/10 bg-white/[0.03] px-3 py-2">OpenAI ready</span>
+                <span className="rounded-md border border-white/10 bg-white/[0.03] px-3 py-2">Groq ready</span>
                 <span className="rounded-md border border-white/10 bg-white/[0.03] px-3 py-2">Mock fallback</span>
               </div>
             </div>

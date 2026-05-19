@@ -1,10 +1,10 @@
-import OpenAI from "openai";
+import Groq from "groq-sdk";
 import { z } from "zod";
 
 import { clampScore } from "@/lib/utils";
 import type { AgentKey, AgentName, AgentResult, ReputationResult, RiskLevel, WalletFacts } from "@/types/reputation";
 
-type AgentSource = "openai" | "mock";
+type AgentSource = "Groq" | "mock";
 
 type AgentConfig = {
   key: AgentKey;
@@ -121,8 +121,8 @@ const narrative = buildConsensusSummary(
 }
 
 async function runSpecializedAgents(facts: WalletFacts) {
-  const apiKey = process.env.OPENAI_API_KEY;
-  const client = apiKey ? new OpenAI({ apiKey }) : null;
+  const apiKey = process.env.Groq_API_KEY;
+  const client = apiKey ? new Groq({ apiKey }) : null;
 
   return Promise.all(
     AGENT_CONFIGS.map(async (config) => {
@@ -131,8 +131,8 @@ async function runSpecializedAgents(facts: WalletFacts) {
       }
 
       try {
-        const result = await runOpenAiAgent(client, config, facts);
-        return { result, source: "openai" as AgentSource };
+        const result = await runGroqAgent(client, config, facts);
+        return { result, source: "Groq" as AgentSource };
       } catch {
         return { result: normalizeAgentResult(config, config.mock(facts)), source: "mock" as AgentSource };
       }
@@ -140,9 +140,9 @@ async function runSpecializedAgents(facts: WalletFacts) {
   );
 }
 
-async function runOpenAiAgent(client: OpenAI, config: AgentConfig, facts: WalletFacts): Promise<AgentResult> {
+async function runGroqAgent(client: Groq, config: AgentConfig, facts: WalletFacts): Promise<AgentResult> {
   const completion = await client.chat.completions.create({
-    model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+    model: process.env.Groq_MODEL || "gpt-4o-mini",
     response_format: { type: "json_object" },
     temperature: 0.45,
     messages: [
@@ -399,9 +399,9 @@ function deriveArchetype(facts: WalletFacts, agents: AgentResult[], trustScore: 
 }
 
 function getAiMode(sources: AgentSource[]): ReputationResult["aiMode"] {
-  const openAiCount = sources.filter((source) => source === "openai").length;
-  if (openAiCount === sources.length) return "openai";
-  if (openAiCount === 0) return "mock";
+  const GroqCount = sources.filter((source) => source === "Groq").length;
+  if (GroqCount === sources.length) return "Groq";
+  if (GroqCount === 0) return "mock";
   return "hybrid";
 }
 

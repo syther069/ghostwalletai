@@ -9,7 +9,7 @@ AI-powered wallet intelligence for the Sui ecosystem.
 - TailwindCSS
 - shadcn-style UI primitives
 - Sui SDK
-- OpenAI API with mock fallback
+- Groq API with mock fallback
 
 ## Local Setup
 
@@ -25,12 +25,12 @@ Open `http://127.0.0.1:3000`.
 Copy `.env.example` to `.env.local` and set:
 
 ```bash
-OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4o-mini
+Groq_API_KEY=
+Groq_MODEL=gpt-4o-mini
 SUI_RPC_URL=https://fullnode.mainnet.sui.io:443
 ```
 
-If `OPENAI_API_KEY` is missing, the app still fetches real Sui mainnet wallet data and uses the built-in mock AI analysis engine.
+If `Groq_API_KEY` is missing, the app still fetches real Sui mainnet wallet data and uses the built-in mock AI analysis engine.
 
 ## Routes
 
